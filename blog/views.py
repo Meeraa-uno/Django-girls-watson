@@ -36,16 +36,19 @@ def post_list(request):
         post.w_count = obj2['word_count']
         post.c_count = obj2['character_count']
 
-        tone_input = ToneInput(post.text)
-        tone = service.tone(tone_input=tone_input, content_type="application/json")
-        tone2 = str(tone)
-        post.tone3 = (tone2[1:500])
-        print(post.tone3)
+        toneObj = json.dumps(service.tone(tone_input=posting,content_type="text/plain").get_result(), indent=2)
+        post.toneObj2 = json.loads(toneObj)
+
+        try:
+            post.tonename1 = post.toneObj2['document_tone']['tones'][0]['tone_name']
+            post.score1 = post.toneObj2['document_tone']['tones'][0]['score']
+            post.tonename2 = post.toneObj2['document_tone']['tones'][1]['tone_name']
+            post.score2 = post.toneObj2['document_tone']['tones'][1]['score']
+
+        except:
+            pass
 
     return render(request, 'blog/post_list.html', {'posts': posts})
-
-
-
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
